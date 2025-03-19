@@ -1,51 +1,45 @@
 #include <Wire.h>
-#include <Adafruit_MPU6050.h>
-#include <Adafruit_Sensor.h>
+#include <MPU6050.h>
 
-Adafruit_MPU6050 mpu;
+MPU6050 mpu;
+
+// Variables to store gyroscope values and angles
+int16_t gx, gy, gz;
+float angleX = 0, angleY = 0, angleZ = 0;
+unsigned long lastTime = 0; // Time tracking for calculating delta time
 
 void setup() {
-  Serial.begin(115200);
-  while (!Serial)
-    delay(10); // Wait for Serial Monitor to open
-
-  // Initialize I2C communication
-  if (!mpu.begin()) {
-    Serial.println("Failed to find MPU6050 chip");
-    while (1) {
-      delay(10);
-    }
-  }
-  Serial.println("MPU6050 Found!");
-
-  // Set accelerometer range to +/- 2G
-  mpu.setAccelerometerRange(MPU6050_RANGE_2_G);
-  // Set gyroscope range to +/- 250 degrees per second
-  mpu.setGyroRange(MPU6050_RANGE_250_DEG);
-  // Set filter bandwidth to 5Hz
-  mpu.setFilterBandwidth(MPU6050_BAND_5_HZ);
-
-  delay(100);
+  Wire.begin();
+  mpu.initialize();
+  Serial.begin(9600);  // Initialize serial communication for printing gyro values and angles
 }
 
 void loop() {
-  // Get new sensor events
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
+  unsigned long currentTime = millis();
+  float deltaTime = (currentTime - lastTime) / 1000.0;  // Calculate time difference in seconds
+  lastTime = currentTime;
 
-  // Print accelerometer values
-  Serial.print("Accel X: "); Serial.print(a.acceleration.x); Serial.print(" m/s^2, ");
-  Serial.print("Y: "); Serial.print(a.acceleration.y); Serial.print(" m/s^2, ");
-  Serial.print("Z: "); Serial.print(a.acceleration.z); Serial.println(" m/s^2");
+  // Get gyroscope data (angular velocity in degrees per second)
+  mpu.getRotation(&gx, &gy, &gz);
 
-  // Print gyroscope values
-  Serial.print("Gyro X: "); Serial.print(g.gyro.x); Serial.print(" rad/s, ");
-  Serial.print("Y: "); Serial.print(g.gyro.y); Serial.print(" rad/s, ");
-  Serial.print("Z: "); Serial.print(g.gyro.z); Serial.println(" rad/s");
+  // Integrate the gyroscope readings to estimate angles
+  angleX += gx * deltaTime;  // Integrate gx over time to get the angle for X
+  angleY += gy * deltaTime;  // Integrate gy over time to get the angle for Y
+  angleZ += gz * deltaTime;  // Integrate gz over time to get the angle for Z
 
-  // Print temperature
-  Serial.print("Temperature: "); Serial.print(temp.temperature); Serial.println(" degC");
+  // Print the gyro readings and estimated angles for X, Y, Z axes
+  Serial.print("Gyro X: ");
+  Serial.print(gx);
+  Serial.print(" | Angle X: ");
+  Serial.print(angleX);
+  Serial.print(" | Gyro Y: ");
+  Serial.print(gy);
+  Serial.print(" | Angle Y: ");
+  Serial.print(angleY);
+  Serial.print(" | Gyro Z: ");
+  Serial.print(gz);
+  Serial.print(" | Angle Z: ");
+  Serial.println(angleZ);
 
-  Serial.println("");
-  delay(500);
+  delay(100);  // Small delay for readability
 }
