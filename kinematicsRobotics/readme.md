@@ -46,10 +46,5 @@ python forwardkinematicsUniversalGUI.py
 ![Screenshot 1](https://github.com/Shivenderthakur/embeddesystems/blob/learning/kinematicsRobotics/Defaultpos.PNG)
 ![Screenshot 2](https://github.com/Shivenderthakur/embeddesystems/blob/learning/kinematicsRobotics/NewPos45.45.PNG)
 
-## Contributors
-- Your Name
-- Additional Contributors
 
-## License
-This project is licensed under the MIT License.
 
