@@ -2,10 +2,10 @@
 #include <ESP32Servo.h>
 #include <BluetoothSerial.h>
 
-#define SERVO_BASE            13
-#define SERVO_SHOULDER        12
-#define SERVO_ELBOW           14
-#define SERVO_GRIPPER         27
+#define SERVO_BASE            25
+#define SERVO_SHOULDER        26
+#define SERVO_ELBOW           27
+#define SERVO_GRIPPER         33
 
 BluetoothSerial SerialBT; // Create BluetoothSerial object
 
